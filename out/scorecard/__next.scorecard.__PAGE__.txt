@@ -1,0 +1,7 @@
+1:"$Sreact.fragment"
+2:I[59665,["/it-financial-dashboard/_next/static/chunks/05-c3ty_6dwfk.js","/it-financial-dashboard/_next/static/chunks/1-8s9_t85wwr4.js","/it-financial-dashboard/_next/static/chunks/03h72-xtv8hf-.js"],"default"]
+3:I[17831,["/it-financial-dashboard/_next/static/chunks/05-c3ty_6dwfk.js","/it-financial-dashboard/_next/static/chunks/1-8s9_t85wwr4.js","/it-financial-dashboard/_next/static/chunks/03h72-xtv8hf-.js"],"default"]
+4:I[97367,["/it-financial-dashboard/_next/static/chunks/05-c3ty_6dwfk.js","/it-financial-dashboard/_next/static/chunks/1-8s9_t85wwr4.js"],"OutletBoundary"]
+5:"$Sreact.suspense"
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"title":"Sector Financial Scorecard","children":["$","$L3",null,{}]}],[["$","script","script-0",{"src":"/it-financial-dashboard/_next/static/chunks/03h72-xtv8hf-.js","async":true}]],["$","$L4",null,{"children":["$","$5",null,{"name":"Next.MetadataOutlet","children":"$@6"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"r6PL5uOfj5WIVqQQe9ViX"}
+6:null

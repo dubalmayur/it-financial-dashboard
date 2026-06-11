@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fcompany\u002F[id]","\u002Fcompare\u002F[type]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
