@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
-import { logUpload, fetchUploadHistory, fetchSyncLogs, logSync, seedDatabase, clearDatabase } from '../firebase/firestoreService';
-import { generateFinancialData } from '../data/sampleData';
+import { logUpload, fetchUploadHistory, fetchSyncLogs, logSync } from '../firebase/firestoreService';
+import { useData } from '../context/DataContext';
+
 
 const excelCols = [
   {sheet:'Company Info', columns:'Quarter, Company'},
@@ -14,6 +15,7 @@ const excelCols = [
 
 export default function DataUpload() {
   const { darkMode } = useTheme();
+  const { reseed } = useData();
   const [dragOver, setDragOver]   = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadDone, setUploadDone] = useState(null); // null | 'success' | 'error'
@@ -53,11 +55,10 @@ export default function DataUpload() {
   const handleReseed = async () => {
     setReseeding(true);
     try {
-      await clearDatabase();
-      await seedDatabase(generateFinancialData());
-      await logSync({ status:'success', msg:'Manual reseed: 84 records written across 7 companies × 12 quarters' });
+      await reseed();
+      await logSync({ status:'success', msg:'Manual reseed: 84 records written — TCS with real investor-relations data, others with model data' });
       const l = await fetchSyncLogs(); setLogs(l);
-      alert('✅ Database reseeded successfully with fresh sample data!');
+      alert('✅ Database reseeded! TCS: real IR data. Other companies: model data.');
     } catch(e) { alert('Error: ' + e.message); }
     setReseeding(false);
   };

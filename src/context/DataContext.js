@@ -1,21 +1,27 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { subscribeToAllData, seedDatabase, isSeeded } from "../firebase/firestoreService";
+import { subscribeToAllData, seedDatabase, isSeeded, clearDatabase } from "../firebase/firestoreService";
 import { generateFinancialData } from "../data/sampleData";
+import { generateTCSRealData } from "../data/tcsRealData";
 
 const DataContext = createContext();
 
-export const DataProvider = ({ children }) => {
-  const [allData, setAllData]     = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [seeding, setSeeding]     = useState(false);
-  const [error, setError]         = useState(null);
-  const [lastSync, setLastSync]   = useState(null);
+// Merge real TCS data into the generated dataset
+const buildSeedRecords = () => {
+  const generated = generateFinancialData().filter(d => d.company !== "TCS");
+  const tcsReal   = generateTCSRealData();
+  return [...tcsReal, ...generated];
+};
 
-  // Derived helpers (computed from live allData)
+export const DataProvider = ({ children }) => {
+  const [allData, setAllData]   = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [seeding, setSeeding]   = useState(false);
+  const [error,   setError]     = useState(null);
+  const [lastSync,setLastSync]  = useState(null);
+
   const getCompanyData = useCallback((company) =>
-    allData
-      .filter(d => d.company === company)
-      .sort((a, b) => a.quarterIndex - b.quarterIndex),
+    allData.filter(d => d.company === company)
+           .sort((a, b) => a.quarterIndex - b.quarterIndex),
   [allData]);
 
   const getQuarterData = useCallback((quarter) =>
@@ -34,38 +40,41 @@ export const DataProvider = ({ children }) => {
       .filter(d => d.company === company)
       .sort((a, b) => a.quarterIndex - b.quarterIndex);
     return cd.map((d, i) => {
-      const prev    = i > 0 ? cd[i - 1] : null;
-      const yoyPrev = i >= 4 ? cd[i - 4] : null;
+      const prev    = i > 0 ? cd[i-1] : null;
+      const yoyPrev = i >= 4 ? cd[i-4] : null;
       return {
         ...d,
-        qoqRevenue: prev
-          ? parseFloat(((d.revenue - prev.revenue) / prev.revenue * 100).toFixed(2))
-          : null,
-        yoyRevenue: yoyPrev
-          ? parseFloat(((d.revenue - yoyPrev.revenue) / yoyPrev.revenue * 100).toFixed(2))
-          : null,
-        qoqMargin: prev
-          ? parseFloat((d.operatingMargin - prev.operatingMargin).toFixed(2))
-          : null,
+        qoqRevenue:    prev    ? parseFloat(((d.revenue    - prev.revenue)    / prev.revenue    * 100).toFixed(2)) : null,
+        yoyRevenue:    yoyPrev ? parseFloat(((d.revenue    - yoyPrev.revenue) / yoyPrev.revenue * 100).toFixed(2)) : null,
+        qoqRevenueUSD: prev    ? parseFloat(((d.revenueUSD - prev.revenueUSD) / prev.revenueUSD * 100).toFixed(2)) : null,
+        yoyRevenueUSD: yoyPrev ? parseFloat(((d.revenueUSD - yoyPrev.revenueUSD) / yoyPrev.revenueUSD * 100).toFixed(2)) : null,
+        qoqMargin:     prev    ? parseFloat((d.operatingMargin - prev.operatingMargin).toFixed(2)) : null,
       };
     });
   }, [allData]);
 
-  // ── Seed Firestore on first launch ────────────────────────────────────────
+  // Reseed helper (also callable from DataUpload page)
+  const reseed = useCallback(async () => {
+    setSeeding(true);
+    try {
+      await clearDatabase();
+      await seedDatabase(buildSeedRecords());
+    } finally {
+      setSeeding(false);
+    }
+  }, []);
+
   useEffect(() => {
-    let unsubscribe;
+    let unsub;
     const init = async () => {
       try {
-        // Check if already seeded
         const seededAlready = await isSeeded();
         if (!seededAlready) {
           setSeeding(true);
-          const records = generateFinancialData();
-          await seedDatabase(records);
+          await seedDatabase(buildSeedRecords());
           setSeeding(false);
         }
-        // Subscribe to real-time updates
-        unsubscribe = subscribeToAllData((data) => {
+        unsub = subscribeToAllData((data) => {
           setAllData(data);
           setLastSync(new Date());
           setLoading(false);
@@ -77,12 +86,12 @@ export const DataProvider = ({ children }) => {
       }
     };
     init();
-    return () => unsubscribe && unsubscribe();
+    return () => unsub && unsub();
   }, []);
 
   return (
     <DataContext.Provider value={{
-      allData, loading, seeding, error, lastSync,
+      allData, loading, seeding, error, lastSync, reseed,
       getCompanyData, getQuarterData, getFilteredData, getGrowthData,
     }}>
       {children}

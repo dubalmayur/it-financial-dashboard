@@ -41,7 +41,10 @@ export default function Header({ selectedCompany, setSelectedCompany, selectedQu
         </button>
         <div>
           <div style={{ fontSize: 16, fontWeight: 700, color: darkMode ? '#e8edf5' : '#0f172a' }}>{pageNames[activePage]}</div>
-          <div style={{ fontSize: 11, color: darkMode ? '#4a5a73' : '#94a3b8' }}>IT Financial Insights Dashboard</div>
+          <div style={{ fontSize: 11, color: darkMode ? '#4a5a73' : '#94a3b8' }}>
+            IT Financial Insights Dashboard
+            {selectedCompany === 'TCS' && <span style={{marginLeft:8,background:'rgba(16,185,129,0.15)',color:'#10b981',padding:'1px 7px',borderRadius:10,fontSize:10,fontWeight:700}}>★ ACTUAL IR DATA</span>}
+          </div>
         </div>
       </div>
 
