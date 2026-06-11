@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useData } from '../context/DataContext';
 import { companies, quarters } from '../data/sampleData';
+import { fmtINR, fmtUSD } from '../hooks/useCurrencyFormat';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LineChart, Line } from 'recharts';
 import { CustomTooltip } from '../components/ChartComponents';
 
@@ -103,13 +104,14 @@ export default function CompanyComparison() {
       <div className="chart-card">
         <div className="chart-header"><div className="chart-title">Comparative Metrics Table — {selectedQuarter}</div></div>
         <table className="data-table">
-          <thead><tr><th>Company</th><th>Revenue</th><th>PAT</th><th>Op.Margin</th><th>Employees</th><th>Attrition</th><th>Clients</th><th>Large Deals</th></tr></thead>
+          <thead><tr><th>Company</th><th>Revenue (₹ Cr)</th><th>Revenue ($ Mn)</th><th>PAT (₹ Cr)</th><th>Op.Margin</th><th>Employees</th><th>Attrition</th><th>Clients</th><th>Large Deals</th></tr></thead>
           <tbody>
             {sortedByRev.map((d,i) => (
               <tr key={i}>
                 <td style={{fontFamily:'Inter',fontWeight:700,color:COLORS[selectedCompanies.indexOf(d.company)%COLORS.length]}}>{d.company}</td>
-                <td>₹{d.revenue.toLocaleString()}</td>
-                <td>₹{d.pat.toLocaleString()}</td>
+                <td>₹{d.revenue?.toLocaleString()} Cr</td>
+                <td style={{color:'var(--cyan)'}}>$ {d.revenueUSD?.toLocaleString()} Mn</td>
+                <td>₹{d.pat?.toLocaleString()} Cr</td>
                 <td style={{color:d.operatingMargin>=22?'var(--positive)':'var(--warning)'}}>{d.operatingMargin}%</td>
                 <td>{(d.employees/1000).toFixed(0)}K</td>
                 <td style={{color:d.attrition>18?'var(--negative)':d.attrition>14?'var(--warning)':'var(--positive)'}}>{d.attrition}%</td>
