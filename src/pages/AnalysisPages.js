@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
-import { getCompanyData } from '../data/sampleData';
+import { useData } from '../context/DataContext';
+
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { CustomTooltip } from '../components/ChartComponents';
 
@@ -8,6 +9,7 @@ const COLORS = ['#3b82f6','#10b981','#8b5cf6','#f59e0b','#ef4444','#06b6d4'];
 
 export function VerticalAnalysis({ company, quarter }) {
   const { darkMode } = useTheme();
+  const { getCompanyData } = useData();
   const cd = getCompanyData(company);
   const grid = darkMode ? '#1e2d47' : '#e2e8f0';
   const txt = darkMode ? '#8a9bb5' : '#64748b';
@@ -103,6 +105,7 @@ export function VerticalAnalysis({ company, quarter }) {
 
 export function GeographyAnalysis({ company, quarter }) {
   const { darkMode } = useTheme();
+  const { getCompanyData } = useData();
   const cd = getCompanyData(company);
   const grid = darkMode ? '#1e2d47' : '#e2e8f0';
   const txt = darkMode ? '#8a9bb5' : '#64748b';
@@ -199,6 +202,7 @@ export function GeographyAnalysis({ company, quarter }) {
 
 export function ClientAnalysis({ company, quarter }) {
   const { darkMode } = useTheme();
+  const { getCompanyData } = useData();
   const cd = getCompanyData(company);
   const grid = darkMode ? '#1e2d47' : '#e2e8f0';
   const txt = darkMode ? '#8a9bb5' : '#64748b';

@@ -1,11 +1,13 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
-import { getCompanyData } from '../data/sampleData';
+import { useData } from '../context/DataContext';
+
 import { LineChart, Line, ComposedChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Area } from 'recharts';
 import { CustomTooltip } from '../components/ChartComponents';
 
 export default function ProfitabilityAnalysis({ company, quarter }) {
   const { darkMode } = useTheme();
+  const { getCompanyData } = useData();
   const cd = getCompanyData(company);
   const grid = darkMode ? '#1e2d47' : '#e2e8f0';
   const txt = darkMode ? '#8a9bb5' : '#64748b';
